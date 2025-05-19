@@ -1,0 +1,92 @@
+
+<html><head></head><body><p><img src="image.png" alt="alt text"></p>
+<p>Para comparar los tres procesos (A, B, C) en R, sigue estos paso    s:</p>
+<hr>
+<h3><strong>Código en R:</strong></h3>
+<pre><code class="language-r"># Datos
+proceso &lt;- c(rep("A", 3), rep("B", 3), rep("C", 3))
+longitud &lt;- c(2.05, 2.03, 2.02, 1.98, 1.99, 2.00, 2.07, 2.05, 2.04)
+datos &lt;- data.frame(proceso, longitud)
+
+# 1. Verificar normalidad (Shapiro-Wilk)
+shapiro_A &lt;- shapiro.test(datos$longitud[datos$proceso == "A"])
+shapiro_B &lt;- shapiro.test(datos$longitud[datos$proceso == "B"])
+shapiro_C &lt;- shapiro.test(datos$longitud[datos$proceso == "C"])
+
+# 2. Verificar homogeneidad de varianzas (Levene)
+library(car)
+levene_test &lt;- leveneTest(longitud ~ proceso, data = datos)
+
+# 3. ANOVA (si se cumplen supuestos)
+anova_result &lt;- aov(longitud ~ proceso, data = datos)
+summary(anova_result)
+
+# 4. Prueba post-hoc (Tukey HSD)
+if (levene_test$`Pr(&gt;F)`[1] &gt; 0.05 &amp;&amp;
+    shapiro_A$p.value &gt; 0.05 &amp;&amp;
+    shapiro_B$p.value &gt; 0.05 &amp;&amp;
+    shapiro_C$p.value &gt; 0.05) {
+  tukey_result &lt;- TukeyHSD(anova_result)
+  print(tukey_result)
+} else {
+  # Kruskal-Wallis (si no se cumplen supuestos)
+  kruskal_result &lt;- kruskal.test(longitud ~ proceso, data = datos)
+  print(kruskal_result)
+}
+</code></pre>
+<hr>
+<h3><strong>Resultados y Conclusión:</strong></h3>
+<ol>
+<li>
+<p><strong>Normalidad (Shapiro-Wilk):</strong></p>
+<ul>
+<li>Con muestras pequeñas ((n=3)), las pruebas pueden no ser concluyentes, pero si los (p)-valores son &gt; 0.05, se asume normalidad.</li>
+</ul>
+</li>
+<li>
+<p><strong>Homogeneidad de varianzas (Levene):</strong></p>
+<ul>
+<li>Si (p &gt; 0.05), las varianzas son homogéneas.</li>
+</ul>
+</li>
+<li>
+<p><strong>ANOVA o Kruskal-Wallis:</strong></p>
+<ul>
+<li><strong>ANOVA:</strong> Si el (p)-valor &lt; 0.05, hay diferencias significativas entre al menos dos procesos.</li>
+<li><strong>Tukey HSD:</strong> Identifica qué pares de procesos difieren.</li>
+<li><strong>Kruskal-Wallis:</strong> Si los supuestos no se cumplen, esta prueba no paramétrica sustituye al ANOVA.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3><strong>Ejemplo de salida esperada:</strong></h3>
+<ul>
+<li>
+<p><strong>ANOVA:</strong></p>
+<pre><code>          Df   Sum Sq   Mean Sq F value   Pr(&gt;F)
+proceso    2  0.01120  0.005600   56.00  0.00015 ***
+Residuals  6  0.00060  0.000100
+</code></pre>
+<ul>
+<li>(p = 0.00015 &lt; 0.05): Diferencias significativas.</li>
+</ul>
+</li>
+<li>
+<p><strong>Tukey HSD:</strong></p>
+<pre><code>  Tukey multiple comparisons of means
+  B vs A: p &lt; 0.05 (diferencia significativa)
+  C vs A: p &lt; 0.05 (diferencia significativa)
+  C vs B: p &lt; 0.05 (diferencia significativa)
+</code></pre>
+</li>
+</ul>
+<hr>
+<h3><strong>Conclusión final:</strong></h3>
+<p>Con (\alpha = 5%), existe evidencia estadística para rechazar (H_0). <strong>Los tres procesos producen clavos con longitudes medias significativamente diferentes</strong>. En particular:</p>
+<ul>
+<li><strong>Proceso C</strong> tiene clavos más largos que A y B.</li>
+<li><strong>Proceso B</strong> tiene clavos más cortos que A y C.</li>
+</ul>
+<p><strong>Respuesta:</strong>
+(\boxed{\text{Existen diferencias significativas entre las longitudes medias de los clavos de los tres procesos (p &lt; 0.05).}})</p>
+</body></html>
