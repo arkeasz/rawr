@@ -141,3 +141,151 @@ Conclusión: No se rechaza H₀. No hay diferencia significativa (p = 0.106)
 - **p-valor = 0.106 > 0.05**: No hay evidencia suficiente para afirmar que el aditivo cambia la densidad.
 - **Advertencia**: Los datos "sin aditivo" no siguen una distribución normal (\( p = 0.0012 \)), por lo que la prueba *t* podría no ser válida. En este caso, una prueba no paramétrica (Mann-Whitney) sería más apropiada.
 ```
+
+**Respuesta para la pregunta 4:**
+
+```r
+# --------------------------------------
+# PROBLEMA 4: Longitud de tachuelas por máquina
+# --------------------------------------
+
+# 1. Datos
+maquinas <- data.frame(
+  longitud = c(
+    14.0, 14.1, 14.2, 14.0, 14.1,
+    13.9, 13.8, 13.9, 14.0, 14.0,
+    14.1, 14.2, 14.1, 14.0, 13.9,
+    13.6, 13.8, 14.0, 13.9, 13.7,
+    13.8, 13.6, 13.9, 13.8, 14.0
+  ),
+  maquina = factor(rep(1:5, each = 5))
+)
+
+# 2. Verificación de supuestos
+# a. Normalidad (Shapiro-Wilk por grupo)
+library(dplyr)
+shapiro_results <- maquinas %>%
+  group_by(maquina) %>%
+  summarise(p_valor = shapiro.test(longitud)$p.value)
+
+# b. Homogeneidad de varianzas (prueba de Levene)
+library(car)
+levene_test <- leveneTest(longitud ~ maquina, data = maquinas)
+
+# 3. ANOVA de un factor
+anova_result <- aov(longitud ~ maquina, data = maquinas)
+anova_table <- summary(anova_result)
+
+# 4. Resultados
+cat("----------------------\n")
+cat("Prueba de normalidad por grupo:\n")
+print(shapiro_results)
+cat("\nPrueba de Levene (homogeneidad de varianzas):\n")
+cat("- p-valor:", levene_test$`Pr(>F)`[1], "\n\n")
+
+cat("Tabla ANOVA:\n")
+print(anova_table[[1]])
+cat("----------------------\n")
+
+# 5. Conclusión
+alpha_5 <- 0.05
+alpha_10 <- 0.10
+p_valor_anova <- anova_table[[1]]$`Pr(>F)`[1]
+
+cat("\nConclusiones:\n")
+if (p_valor_anova < alpha_5) {
+  cat("- Con α = 5%: Rechazamos H₀. Existen diferencias significativas entre las máquinas.\n")
+} else if (p_valor_anova < alpha_10) {
+  cat("- Con α = 10%: Rechazamos H₀. Hay evidencia de diferencias entre las máquinas.\n")
+} else {
+  cat("- No se rechaza H₀. No hay diferencias significativas (α = 5% y 10%).\n")
+}
+
+# Si se violan supuestos, sugerir prueba no paramétrica
+if (any(shapiro_results$p_valor < 0.05) {
+  cat("\nAdvertencia: Al menos un grupo no sigue una distribución normal. Considere usar la prueba de Kruskal-Wallis.\n")
+}
+```
+
+### Explicación:
+- **a. Modelo**: ANOVA de un factor (comparación de medias entre 5 máquinas).
+- **b. Hipótesis**:
+  - \( H_0: \mu_1 = \mu_2 = \mu_3 = \mu_4 = \mu_5 \)
+  - \( H_1: \) Al menos una media difiere.
+- **c. Suposiciones**: Normalidad (Shapiro-Wilk) y homogeneidad de varianzas (Levene).
+- **d. Tabla ANOVA**: Muestra la variabilidad entre grupos y dentro de grupos.
+- **e. Conclusiones**: Basadas en el p-valor del ANOVA.
+
+---
+
+**Respuesta para la pregunta 5:**
+
+```r
+# --------------------------------------
+# PROBLEMA 5: Resistencia por porcentaje de algodón
+# --------------------------------------
+
+# 1. Datos
+algodon <- data.frame(
+  resistencia = c(
+    7, 7, 15, 11, 9,
+    12, 17, 12, 18, 18,
+    14, 18, 18, 19, 19,
+    19, 25, 22, 19, 23,
+    7, 10, 11, 15, 11
+  ),
+  porcentaje = factor(rep(c(15, 20, 25, 30, 35), each = 5))
+)
+
+# 2. Verificación de supuestos (igual que en P4)
+shapiro_results_alg <- algodon %>%
+  group_by(porcentaje) %>%
+  summarise(p_valor = shapiro.test(resistencia)$p.value)
+
+levene_test_alg <- leveneTest(resistencia ~ porcentaje, data = algodon)
+
+# 3. ANOVA de un factor
+anova_alg <- aov(resistencia ~ porcentaje, data = algodon)
+anova_table_alg <- summary(anova_alg)
+
+# 4. Resultados
+cat("----------------------\n")
+cat("Prueba de normalidad por grupo:\n")
+print(shapiro_results_alg)
+cat("\nPrueba de Levene (homogeneidad de varianzas):\n")
+cat("- p-valor:", levene_test_alg$`Pr(>F)`[1], "\n\n")
+
+cat("Tabla ANOVA:\n")
+print(anova_table_alg[[1]])
+cat("----------------------\n")
+
+# 5. Conclusión
+p_valor_alg <- anova_table_alg[[1]]$`Pr(>F)`[1]
+
+cat("\nConclusiones:\n")
+if (p_valor_alg < alpha_5) {
+  cat("- Con α = 5%: Rechazamos H₀. El porcentaje de algodón afecta la resistencia.\n")
+} else if (p_valor_alg < alpha_10) {
+  cat("- Con α = 10%: Rechazamos H₀. Hay evidencia de efecto del algodón.\n")
+} else {
+  cat("- No se rechaza H₀. No hay efecto significativo (α = 5% y 10%).\n")
+}
+
+# Si se violan supuestos, sugerir prueba no paramétrica
+if (any(shapiro_results_alg$p_valor < 0.05)) {
+  cat("\nAdvertencia: Al menos un grupo no sigue una distribución normal. Considere usar la prueba de Kruskal-Wallis.\n")
+}
+```
+
+### Explicación:
+- **a. Modelo**: ANOVA de un factor (comparación de medias entre 5 niveles de algodón).
+- **b. Hipótesis**:
+  - \( H_0: \mu_{15\%} = \mu_{20\%} = \mu_{25\%} = \mu_{30\%} = \mu_{35\%} \)
+  - \( H_1: \) Al menos una media difiere.
+- **c. Suposiciones**: Normalidad y homogeneidad de varianzas.
+- **d. Tabla ANOVA**: Evalúa si hay diferencias significativas entre grupos.
+- **e. Conclusiones**: Basadas en el p-valor del ANOVA.
+
+---
+
+**Nota**: Ejecute el código en R para obtener los valores numéricos (p-valores, estadísticos) y ajuste las conclusiones según los resultados. Si las suposiciones no se cumplen, use alternativas no paramétricas como `kruskal.test()` en lugar de ANOVA.
