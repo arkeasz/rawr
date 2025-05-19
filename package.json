@@ -4,6 +4,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
+    "dev": "eleventy --serve --input=src --output=build",
     "build": "eleventy --input=src --output=build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,5 +14,8 @@
   "description": "",
   "dependencies": {
     "@11ty/eleventy": "^3.0.0"
+  },
+  "devDependencies": {
+    "eleventy-plugin-mathjax": "^2.0.4"
   }
 }
