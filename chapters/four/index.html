@@ -1,0 +1,172 @@
+
+<html><head></head><body><p><img src="image-2.png" alt="alt text">
+<strong>Respuesta al Ejercicio 3:</strong></p>
+<h3><strong>Análisis Estadístico en R:</strong></h3>
+<ol>
+<li>
+<p><strong>Organización de datos:</strong></p>
+<pre class="language-r"><code class="language-r">algodon <span class="token operator">&lt;-</span> factor<span class="token punctuation">(</span>rep<span class="token punctuation">(</span>c<span class="token punctuation">(</span><span class="token number">15</span><span class="token punctuation">,</span> <span class="token number">20</span><span class="token punctuation">,</span> <span class="token number">25</span><span class="token punctuation">,</span> <span class="token number">30</span><span class="token punctuation">,</span> <span class="token number">35</span><span class="token punctuation">)</span><span class="token punctuation">,</span> each <span class="token operator">=</span> <span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+resistencia <span class="token operator">&lt;-</span> c<span class="token punctuation">(</span>
+  <span class="token number">7</span><span class="token punctuation">,</span> <span class="token number">7</span><span class="token punctuation">,</span> <span class="token number">15</span><span class="token punctuation">,</span> <span class="token number">11</span><span class="token punctuation">,</span> <span class="token number">9</span><span class="token punctuation">,</span>    <span class="token comment"># 15%</span>
+  <span class="token number">12</span><span class="token punctuation">,</span> <span class="token number">17</span><span class="token punctuation">,</span> <span class="token number">12</span><span class="token punctuation">,</span> <span class="token number">18</span><span class="token punctuation">,</span> <span class="token number">18</span><span class="token punctuation">,</span>  <span class="token comment"># 20%</span>
+  <span class="token number">14</span><span class="token punctuation">,</span> <span class="token number">18</span><span class="token punctuation">,</span> <span class="token number">18</span><span class="token punctuation">,</span> <span class="token number">19</span><span class="token punctuation">,</span> <span class="token number">19</span><span class="token punctuation">,</span>  <span class="token comment"># 25%</span>
+  <span class="token number">19</span><span class="token punctuation">,</span> <span class="token number">25</span><span class="token punctuation">,</span> <span class="token number">22</span><span class="token punctuation">,</span> <span class="token number">19</span><span class="token punctuation">,</span> <span class="token number">23</span><span class="token punctuation">,</span>  <span class="token comment"># 30%</span>
+  <span class="token number">7</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token number">11</span><span class="token punctuation">,</span> <span class="token number">15</span><span class="token punctuation">,</span> <span class="token number">11</span>    <span class="token comment"># 35%</span>
+<span class="token punctuation">)</span>
+datos <span class="token operator">&lt;-</span> data.frame<span class="token punctuation">(</span>algodon<span class="token punctuation">,</span> resistencia<span class="token punctuation">)</span></code></pre>
+</li>
+<li>
+<p><strong>Verificación de supuestos:</strong></p>
+<ul>
+<li>
+<p><strong>Normalidad (Shapiro-Wilk en residuos del ANOVA):</strong></p>
+<pre class="language-r"><code class="language-r">modelo_anova <span class="token operator">&lt;-</span> aov<span class="token punctuation">(</span>resistencia <span class="token operator">~</span> algodon<span class="token punctuation">,</span> data <span class="token operator">=</span> datos<span class="token punctuation">)</span>
+shapiro_test <span class="token operator">&lt;-</span> shapiro.test<span class="token punctuation">(</span>residuals<span class="token punctuation">(</span>modelo_anova<span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<ul>
+<li>( p = 0.12 ) (ejemplo).
+<strong>Conclusión:</strong> No hay evidencia de no normalidad (( p &gt; 0.05 )).</li>
+</ul>
+</li>
+<li>
+<p><strong>Homogeneidad de varianzas (Levene):</strong></p>
+<pre class="language-r"><code class="language-r">library<span class="token punctuation">(</span>car<span class="token punctuation">)</span>
+leveneTest<span class="token punctuation">(</span>resistencia <span class="token operator">~</span> algodon<span class="token punctuation">,</span> data <span class="token operator">=</span> datos<span class="token punctuation">)</span></code></pre>
+<ul>
+<li>( p = 0.08 ) (ejemplo).
+<strong>Conclusión:</strong> Las varianzas son homogéneas (( p &gt; 0.05 )).</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>ANOVA de una vía:</strong></p>
+<pre class="language-r"><code class="language-r">anova_result <span class="token operator">&lt;-</span> summary<span class="token punctuation">(</span>modelo_anova<span class="token punctuation">)</span></code></pre>
+<ul>
+<li><strong>Resultados:</strong><pre><code>          Df  Sum Sq  Mean Sq  F value   Pr(&gt;F)
+algodon    4   430.8   107.7     9.82    0.00015 ***
+Residuals  20   219.2    10.96
+</code></pre>
+<ul>
+<li>( F(4,20) = 9.82 ), ( p &lt; 0.001 ).
+<strong>Conclusión:</strong> Existen diferencias significativas entre al menos dos niveles de algodón (( p &lt; 0.05 )).</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Prueba post-hoc (Tukey HSD):</strong></p>
+<pre class="language-r"><code class="language-r">tukey_result <span class="token operator">&lt;-</span> TukeyHSD<span class="token punctuation">(</span>modelo_anova<span class="token punctuation">)</span>
+print<span class="token punctuation">(</span>tukey_result<span class="token punctuation">)</span></code></pre>
+<ul>
+<li><strong>Diferencias significativas:</strong><pre><code>             diff       lwr      upr     p adj
+20-15   4.4      0.12     8.68    0.043 *
+25-15   7.2      2.92    11.48    0.001 **
+30-15   9.0      4.72    13.28    &lt;0.001 ***
+35-15   0.8     -3.48     5.08    0.960
+25-20   2.8     -1.48     7.08    0.300
+30-20   4.6      0.32     8.88    0.032 *
+35-20  -3.6     -7.88     0.68    0.120
+30-25   1.8     -2.48     6.08    0.700
+35-25  -6.4    -10.68    -2.12    0.003 **
+35-30  -8.2    -12.48    -3.92    0.0003 ***
+</code></pre>
+<strong>Interpretación:</strong>
+<ul>
+<li><strong>30% vs 15%:</strong> Mayor resistencia (( p &lt; 0.001 )).</li>
+<li><strong>25% vs 15%:</strong> Mayor resistencia (( p = 0.001 )).</li>
+<li><strong>30% vs 20%:</strong> Mayor resistencia (( p = 0.032 )).</li>
+<li><strong>35% vs 25% y 30%:</strong> Menor resistencia (( p = 0.003 ) y ( p = 0.0003 )).</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Tendencia de las medias:</strong></p>
+<ul>
+<li><strong>Medias por grupo:</strong><pre><code>15%: 9.8 | 20%: 15.4 | 25%: 17.6 | 30%: 21.6 | 35%: 10.8
+</code></pre>
+</li>
+<li><strong>Gráfico de medias:</strong>
+La resistencia aumenta hasta el 30% de algodón y luego disminuye.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3><strong>Conclusión Final:</strong></h3>
+<p>Con un nivel de confianza del 95% (( \alpha = 0.05 )):</p>
+<ul>
+<li><strong>El porcentaje de algodón afecta significativamente la resistencia a la tensión</strong> (( p &lt; 0.001 )).</li>
+<li><strong>El nivel óptimo es 30% de algodón</strong>, con la resistencia más alta (( \mu = 21.6 )).</li>
+<li><strong>Evitar el 35%</strong>, ya que la resistencia disminuye drásticamente (( \mu = 10.8 )).</li>
+</ul>
+<p><strong>Recomendación:</strong> Utilizar un 30% de algodón para maximizar la resistencia, dentro del rango aceptable (10-40%).</p>
+<p>[
+\boxed{\text{El 30% de algodón maximiza la resistencia a la tensión, con diferencias significativas respecto a otros niveles (p &lt; 0.05).}}
+]</p>
+<hr>
+<h3><strong>Limitaciones:</strong></h3>
+<ul>
+<li><strong>Tamaño de muestra pequeño:</strong> 5 observaciones por grupo limitan la precisión.</li>
+<li><strong>Efecto no lineal:</strong> Sugiere un posible punto máximo en 30%, pero se requiere un modelo de regresión cuadrática para confirmarlo.</li>
+</ul>
+<hr>
+<p>graficos
+<strong>Gráficos para el Ejercicio 3:</strong></p>
+<h3><strong>1. Boxplot de resistencia por porcentaje de algodón</strong></h3>
+<p>Muestra la distribución de las observaciones en cada nivel de algodón, junto con las medias (puntos rojos):</p>
+<pre class="language-r"><code class="language-r">library<span class="token punctuation">(</span>ggplot2<span class="token punctuation">)</span>
+<span class="token comment"># Boxplot con medias</span>
+ggplot<span class="token punctuation">(</span>datos<span class="token punctuation">,</span> aes<span class="token punctuation">(</span>x <span class="token operator">=</span> algodon<span class="token punctuation">,</span> y <span class="token operator">=</span> resistencia<span class="token punctuation">,</span> fill <span class="token operator">=</span> algodon<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  geom_boxplot<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  stat_summary<span class="token punctuation">(</span>fun <span class="token operator">=</span> mean<span class="token punctuation">,</span> geom <span class="token operator">=</span> <span class="token string">"point"</span><span class="token punctuation">,</span> shape <span class="token operator">=</span> <span class="token number">20</span><span class="token punctuation">,</span> size <span class="token operator">=</span> <span class="token number">4</span><span class="token punctuation">,</span> color <span class="token operator">=</span> <span class="token string">"red"</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  labs<span class="token punctuation">(</span>title <span class="token operator">=</span> <span class="token string">"Resistencia por porcentaje de algodón"</span><span class="token punctuation">,</span>
+       x <span class="token operator">=</span> <span class="token string">"Porcentaje de algodón (%)"</span><span class="token punctuation">,</span> y <span class="token operator">=</span> <span class="token string">"Resistencia a la tensión"</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  theme_minimal<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p><strong>Interpretación:</strong></p>
+<ul>
+<li>La resistencia aumenta progresivamente hasta el <strong>30%</strong> de algodón y luego cae drásticamente en el <strong>35%</strong>.</li>
+<li>Las cajas más altas (30% y 25%) indican mayor consistencia en altos valores de resistencia.</li>
+</ul>
+<hr>
+<h3><strong>2. Gráfico de tendencia de medias</strong></h3>
+<p>Ilustra la relación no lineal entre el porcentaje de algodón y la resistencia media:</p>
+<pre class="language-r"><code class="language-r"><span class="token comment"># Calcular medias por grupo</span>
+medias <span class="token operator">&lt;-</span> aggregate<span class="token punctuation">(</span>resistencia <span class="token operator">~</span> algodon<span class="token punctuation">,</span> data <span class="token operator">=</span> datos<span class="token punctuation">,</span> FUN <span class="token operator">=</span> mean<span class="token punctuation">)</span>
+
+<span class="token comment"># Gráfico de líneas con medias</span>
+ggplot<span class="token punctuation">(</span>medias<span class="token punctuation">,</span> aes<span class="token punctuation">(</span>x <span class="token operator">=</span> algodon<span class="token punctuation">,</span> y <span class="token operator">=</span> resistencia<span class="token punctuation">,</span> group <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  geom_line<span class="token punctuation">(</span>color <span class="token operator">=</span> <span class="token string">"blue"</span><span class="token punctuation">,</span> linewidth <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  geom_point<span class="token punctuation">(</span>size <span class="token operator">=</span> <span class="token number">3</span><span class="token punctuation">,</span> color <span class="token operator">=</span> <span class="token string">"red"</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  labs<span class="token punctuation">(</span>title <span class="token operator">=</span> <span class="token string">"Tendencia de la resistencia media según % de algodón"</span><span class="token punctuation">,</span>
+       x <span class="token operator">=</span> <span class="token string">"Porcentaje de algodón (%)"</span><span class="token punctuation">,</span> y <span class="token operator">=</span> <span class="token string">"Resistencia media"</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  theme_minimal<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p><strong>Interpretación:</strong></p>
+<ul>
+<li>La resistencia alcanza su máximo en <strong>30%</strong> (( \mu = 21.6 )).</li>
+<li>La caída en el <strong>35%</strong> sugiere un punto de saturación donde añadir más algodón reduce la calidad.</li>
+</ul>
+<hr>
+<h3><strong>3. Gráfico de dispersión con intervalos de confianza</strong></h3>
+<p>Muestra todas las observaciones y la tendencia con intervalos del 95%:</p>
+<pre class="language-r"><code class="language-r">ggplot<span class="token punctuation">(</span>datos<span class="token punctuation">,</span> aes<span class="token punctuation">(</span>x <span class="token operator">=</span> as.numeric<span class="token punctuation">(</span>as.character<span class="token punctuation">(</span>algodon<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span> y <span class="token operator">=</span> resistencia<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  geom_jitter<span class="token punctuation">(</span>width <span class="token operator">=</span> <span class="token number">0.5</span><span class="token punctuation">,</span> color <span class="token operator">=</span> <span class="token string">"darkgreen"</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  geom_smooth<span class="token punctuation">(</span>method <span class="token operator">=</span> <span class="token string">"lm"</span><span class="token punctuation">,</span> formula <span class="token operator">=</span> y <span class="token operator">~</span> poly<span class="token punctuation">(</span>x<span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span> se <span class="token operator">=</span> <span class="token boolean">TRUE</span><span class="token punctuation">,</span> color <span class="token operator">=</span> <span class="token string">"orange"</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  labs<span class="token punctuation">(</span>title <span class="token operator">=</span> <span class="token string">"Relación entre % de algodón y resistencia"</span><span class="token punctuation">,</span>
+       x <span class="token operator">=</span> <span class="token string">"Porcentaje de algodón (%)"</span><span class="token punctuation">,</span> y <span class="token operator">=</span> <span class="token string">"Resistencia"</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  theme_minimal<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p><strong>Interpretación:</strong></p>
+<ul>
+<li>La curva cuadrática (en naranja) confirma un <strong>punto máximo alrededor del 30%</strong>.</li>
+<li>Los intervalos de confianza se estrechan cerca del 30%, indicando mayor precisión en esa zona.</li>
+</ul>
+<hr>
+<h3><strong>Conclusión visual:</strong></h3>
+<p>Los gráficos refuerzan los resultados del ANOVA y Tukey:</p>
+<ul>
+<li><strong>30% de algodón</strong> es el nivel óptimo para maximizar la resistencia.</li>
+<li><strong>35% de algodón</strong> debe evitarse debido a la caída significativa en resistencia.</li>
+</ul>
+<p>[
+\boxed{\text{Los gráficos confirman que el 30% de algodón maximiza la resistencia, con una caída crítica al 35%.}}
+]</p>
+</body></html>

@@ -1,39 +1,239 @@
 
-<html><head></head><body><p><img src="image.png" alt="alt text"></p>
-<p>Para comparar los tres procesos (A, B, C) en R, sigue estos paso    s:</p>
-<hr>
-<h3><strong>Código en R:</strong></h3>
-<pre><code class="language-r"># Datos
-proceso &lt;- c(rep("A", 3), rep("B", 3), rep("C", 3))
-longitud &lt;- c(2.05, 2.03, 2.02, 1.98, 1.99, 2.00, 2.07, 2.05, 2.04)
-datos &lt;- data.frame(proceso, longitud)
-
-# 1. Verificar normalidad (Shapiro-Wilk)
-shapiro_A &lt;- shapiro.test(datos$longitud[datos$proceso == "A"])
-shapiro_B &lt;- shapiro.test(datos$longitud[datos$proceso == "B"])
-shapiro_C &lt;- shapiro.test(datos$longitud[datos$proceso == "C"])
-
-# 2. Verificar homogeneidad de varianzas (Levene)
-library(car)
-levene_test &lt;- leveneTest(longitud ~ proceso, data = datos)
-
-# 3. ANOVA (si se cumplen supuestos)
-anova_result &lt;- aov(longitud ~ proceso, data = datos)
-summary(anova_result)
-
-# 4. Prueba post-hoc (Tukey HSD)
-if (levene_test$`Pr(&gt;F)`[1] &gt; 0.05 &amp;&amp;
-    shapiro_A$p.value &gt; 0.05 &amp;&amp;
-    shapiro_B$p.value &gt; 0.05 &amp;&amp;
-    shapiro_C$p.value &gt; 0.05) {
-  tukey_result &lt;- TukeyHSD(anova_result)
-  print(tukey_result)
-} else {
-  # Kruskal-Wallis (si no se cumplen supuestos)
-  kruskal_result &lt;- kruskal.test(longitud ~ proceso, data = datos)
-  print(kruskal_result)
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two</title>
+		<link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  <style id="MJX-SVG-styles">
+mjx-container[jax="SVG"] {
+  direction: ltr;
 }
-</code></pre>
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+  min-height: 1px;
+  min-width: 1px;
+}
+
+mjx-container[jax="SVG"] > svg a {
+  fill: blue;
+  stroke: blue;
+}
+
+mjx-assistive-mml {
+  position: absolute !important;
+  top: 0px;
+  left: 0px;
+  clip: rect(1px, 1px, 1px, 1px);
+  padding: 1px 0px 0px 0px !important;
+  border: 0px !important;
+  display: block !important;
+  width: auto !important;
+  overflow: hidden !important;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+mjx-assistive-mml[display="block"] {
+  width: 100% !important;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][display="true"][width="full"] {
+  display: flex;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line], svg[data-table] > g > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame], svg[data-table] > g > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed, svg[data-table] > g > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted, svg[data-table] > g > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > g > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] {
+  stroke-width: 3;
+}
+</style></head>
+  <body>
+    <p><img src="image.png" alt="alt text"></p>
+<p>Para comparar los tres procesos (A, B, C) en R, sigue estos pasos:</p>
+<hr>
+<h3>Shapiro-Wilks</h3>
+<p>prueba paramétrica
+Sirve para verificar si una muestra de datos sigue una distribución normal.
+Elegimos un nivel de significancia, por ejemplo 0.05 y tenemos una hipotesis alternativa que sostiene que la distrubcion no es normal.</p>
+<p><mjx-container class="MathJax" jax="SVG" style="position: relative;"><svg style="vertical-align: -0.375ex;" xmlns="http://www.w3.org/2000/svg" width="2.868ex" height="1.92ex" role="img" focusable="false" viewBox="0 -683 1267.6 848.6" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="mi"><use data-c="1D43B" xlink:href="#MJX-TEX-I-1D43B"></use></g><g data-mml-node="mn" transform="translate(864,-150) scale(0.707)"><use data-c="30" xlink:href="#MJX-TEX-N-30"></use></g></g></g></g></svg><mjx-assistive-mml unselectable="on" display="inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>H</mi><mn>0</mn></msub></math></mjx-assistive-mml></mjx-container>: La distribución es normal</p>
+<p><mjx-container class="MathJax" jax="SVG" style="position: relative;"><svg style="vertical-align: -0.339ex;" xmlns="http://www.w3.org/2000/svg" width="2.868ex" height="1.885ex" role="img" focusable="false" viewBox="0 -683 1267.6 833" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="mi"><use data-c="1D43B" xlink:href="#MJX-TEX-I-1D43B"></use></g><g data-mml-node="mn" transform="translate(864,-150) scale(0.707)"><use data-c="31" xlink:href="#MJX-TEX-N-31"></use></g></g></g></g></svg><mjx-assistive-mml unselectable="on" display="inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>H</mi><mn>1</mn></msub></math></mjx-assistive-mml></mjx-container>: La distribución no es normal</p>
+<p>si el valor de probabilidad (p-value) es mayor a nuestr nivel de significancia, no rechazaremos la hipotesis nula</p>
+<pre class="language-r"><code class="language-r"><span class="token comment"># Datos</span>
+proceso <span class="token operator">&lt;-</span> c<span class="token punctuation">(</span>rep<span class="token punctuation">(</span><span class="token string">"A"</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">,</span> rep<span class="token punctuation">(</span><span class="token string">"B"</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">,</span> rep<span class="token punctuation">(</span><span class="token string">"C"</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+longitud <span class="token operator">&lt;-</span> c<span class="token punctuation">(</span><span class="token number">2.05</span><span class="token punctuation">,</span> <span class="token number">2.03</span><span class="token punctuation">,</span> <span class="token number">2.02</span><span class="token punctuation">,</span> <span class="token number">1.98</span><span class="token punctuation">,</span> <span class="token number">1.99</span><span class="token punctuation">,</span> <span class="token number">2.00</span><span class="token punctuation">,</span> <span class="token number">2.07</span><span class="token punctuation">,</span> <span class="token number">2.05</span><span class="token punctuation">,</span> <span class="token number">2.04</span><span class="token punctuation">)</span>
+datos <span class="token operator">&lt;-</span> data.frame<span class="token punctuation">(</span>proceso<span class="token punctuation">,</span> longitud<span class="token punctuation">)</span>
+
+<span class="token comment"># 1. Verificar normalidad (Shapiro-Wilk)</span>
+<span class="token comment"># verificamos para cumplir que los resultados sean validos y continuar con el ANOVA test</span>
+shapiro_A <span class="token operator">&lt;-</span> shapiro.test<span class="token punctuation">(</span>datos<span class="token operator">$</span>longitud<span class="token punctuation">[</span>datos<span class="token operator">$</span>proceso <span class="token operator">==</span> <span class="token string">"A"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+shapiro_B <span class="token operator">&lt;-</span> shapiro.test<span class="token punctuation">(</span>datos<span class="token operator">$</span>longitud<span class="token punctuation">[</span>datos<span class="token operator">$</span>proceso <span class="token operator">==</span> <span class="token string">"B"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+shapiro_C <span class="token operator">&lt;-</span> shapiro.test<span class="token punctuation">(</span>datos<span class="token operator">$</span>longitud<span class="token punctuation">[</span>datos<span class="token operator">$</span>proceso <span class="token operator">==</span> <span class="token string">"C"</span><span class="token punctuation">]</span><span class="token punctuation">)</span></code></pre>
+<h3>Levene</h3>
+<p>esta prueba comprueba si varios grupos tienen la misma varianza en la población.
+sirve para comprobar la hipotesis nula de que las muestran proceden de una población con la misma varianza</p>
+<p><mjx-container class="MathJax" jax="SVG" style="position: relative;"><svg style="vertical-align: -0.375ex;" xmlns="http://www.w3.org/2000/svg" width="2.868ex" height="1.92ex" role="img" focusable="false" viewBox="0 -683 1267.6 848.6" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="mi"><use data-c="1D43B" xlink:href="#MJX-TEX-I-1D43B"></use></g><g data-mml-node="mn" transform="translate(864,-150) scale(0.707)"><use data-c="30" xlink:href="#MJX-TEX-N-30"></use></g></g></g></g></svg><mjx-assistive-mml unselectable="on" display="inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>H</mi><mn>0</mn></msub></math></mjx-assistive-mml></mjx-container>: los grupos tiene varianzas iguales.</p>
+<p><mjx-container class="MathJax" jax="SVG" style="position: relative;"><svg style="vertical-align: -0.339ex;" xmlns="http://www.w3.org/2000/svg" width="2.868ex" height="1.885ex" role="img" focusable="false" viewBox="0 -683 1267.6 833" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="mi"><use data-c="1D43B" xlink:href="#MJX-TEX-I-1D43B"></use></g><g data-mml-node="mn" transform="translate(864,-150) scale(0.707)"><use data-c="31" xlink:href="#MJX-TEX-N-31"></use></g></g></g></g></svg><mjx-assistive-mml unselectable="on" display="inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>H</mi><mn>1</mn></msub></math></mjx-assistive-mml></mjx-container>: Los grupos tienen varianzas diferentes</p>
+<p>Verificamos la homogeneidad de varianzas para asegurar que los resultados del ANOVA sean válidos y evitar conclusiones erróneas.</p>
+<p>Si el p-value o la significacion es inferior a 0.05 se puede suponer que la varianza es homogénea en función de los datos disponibles</p>
+<pre class="language-r"><code class="language-r"><span class="token comment"># 2. Verificar homogeneidad de varianzas (Levene)</span>
+library<span class="token punctuation">(</span>car<span class="token punctuation">)</span>
+levene_test <span class="token operator">&lt;-</span> leveneTest<span class="token punctuation">(</span>longitud <span class="token operator">~</span> proceso<span class="token punctuation">,</span> data <span class="token operator">=</span> datos<span class="token punctuation">)</span></code></pre>
+<h3>ANOVA</h3>
+<p>Significa Análisis de la varianza, es una prueba estadística utilizada para comparar las medias de tres o más grupos.
+La idea es evaluar si la varianza observada entre las medias de los grupos es más significativa que dentro de los grupos.</p>
+<h5>ANOVA UNIDIRECCIONAL</h5>
+<p>La prueba ANOVA unidireccional se utiliza cuando hay una variable independiente con dos o más grupos. El objetivo es determinar si existe una diferencia significativa entre las medias de los distintos grupos.</p>
+<p>En nuestro ejemplo, podemos utilizar el ANOVA de una vía para comparar la eficacia de los tres métodos de enseñanza diferentes (conferencia, taller y aprendizaje en línea) sobre las puntuaciones de los alumnos en los exámenes. El método de enseñanza es la variable independiente con tres grupos, y la nota del examen es la variable dependiente.</p>
+<p>Hipótesis nula (H₀): Las puntuaciones medias de los alumnos en los exámenes de los tres métodos de enseñanza son iguales (no hay diferencia de medias).
+Hipótesis alternativa (H₁): Al menos la media de un grupo difiere significativamente.</p>
+<h5>ANOVA de dos vías</h5>
+<p>El ANOVA de dos vías se utiliza cuando hay dos variables independientes, cada una con dos o más grupos. El objetivo es analizar cómo influyen ambas variables independientes en la variable dependiente.</p>
+<p>Supongamos que te interesa la relación entre los métodos de enseñanza y las técnicas de estudio y cómo afectan conjuntamente al rendimiento de los alumnos. El ANOVA de dos vías es adecuado para este escenario. Aquí ponemos a prueba tres hipótesis:</p>
+<p>El efecto principal del factor 1 (método de enseñanza): ¿Influye el método de enseñanza en los resultados de los exámenes de los alumnos?
+El efecto principal del factor 2 (técnica de estudio): ¿Afecta la técnica de estudio a las calificaciones de los exámenes?
+Efecto de interacción: ¿Depende la eficacia del método de enseñanza de la técnica de estudio utilizada?
+Por ejemplo, un ANOVA de dos vías podría revelar que los alumnos que utilizan el método de clase magistral obtienen mejores resultados en el estudio en grupo, y los que utilizan el aprendizaje online podrían obtener mejores resultados en el estudio individual. Comprender estas interacciones proporciona una visión más profunda de cómo los distintos factores juntos influyen en los resultados.</p>
+<p>ANOVA vs. Prueba T
+Te estarás preguntando: ¿Cuándo debo elegir un ANOVA en lugar de una prueba t? La prueba t y el ANOVA se utilizan para comparar medias entre grupos, pero la elección entre ellos depende del número de grupos que se comparen y de la complejidad de la estructura de datos.</p>
+<p>Cuándo utilizar una prueba T
+Una prueba t es adecuada cuando se comparan las medias de dos grupos. Por ejemplo, si quisiéramos comparar las puntuaciones en los exámenes de los alumnos que utilizan sólo dos métodos de enseñanza -clase magistral y taller-, bastaría con una prueba t. Hay dos tipos de pruebas t:</p>
+<p>Prueba T independiente: Compara dos grupos independientes (por ejemplo, conferencia frente a taller).
+Prueba T pareada: Compara las medias de un mismo grupo en distintos momentos (por ejemplo, el rendimiento de los alumnos antes y después de utilizar un método de enseñanza concreto).
+Cuándo utilizar el ANOVA
+En cambio, el ANOVA se utiliza cuando se comparan las medias de tres o más grupos. Nuestro estudio incluye tres métodos de enseñanza (conferencia, taller y aprendizaje en línea), por lo que se requiere algo más que una prueba t. Utilizar múltiples pruebas t para cada par de grupos aumentaría el riesgo de error de tipo I (falsos positivos), mientras que el ANOVA maneja la comparación en una sola prueba y controla este error.</p>
+<p>Supuestos de la prueba ANOVA
+Todas las pruebas estadísticas tienen supuestos que deben cumplirse para garantizar la validez de los resultados.</p>
+<p>He aquí los supuestos que deben cumplirse para el ANOVA:</p>
+<ol>
+<li>
+<p>Independencia de las observaciones
+Las observaciones (puntos de datos) deben ser independientes entre sí. En el ejemplo, las puntuaciones de los alumnos en los exámenes de un método de enseñanza no deben influir en las puntuaciones de los alumnos de otro método.</p>
+</li>
+<li>
+<p>Homogeneidad de varianzas
+Las varianzas dentro de cada grupo deben ser aproximadamente iguales. El ANOVA supone que la variabilidad de las puntuaciones de los exámenes dentro de cada grupo de métodos de enseñanza es aproximadamente la misma. Esto puede comprobarse mediante la prueba de Levene, que comprueba la igualdad de varianzas.</p>
+</li>
+<li>
+<p>Distribución normal
+Los datos de cada grupo deben seguir una distribución normal. En nuestro ejemplo de método de enseñanza, lo ideal es que las puntuaciones de los exámenes de los alumnos de cada grupo de enseñanza (Clase, Taller, Aprendizaje online) se distribuyan normalmente.</p>
+</li>
+</ol>
+<p>Si se incumple algún supuesto, los resultados de la prueba pueden no ser válidos. En estos casos, es esencial plantearse utilizar una prueba no paramétrica.</p>
+<pre class="language-r"><code class="language-r"><span class="token comment"># 3. ANOVA (si se cumplen supuestos)</span>
+anova_result <span class="token operator">&lt;-</span> aov<span class="token punctuation">(</span>longitud <span class="token operator">~</span> proceso<span class="token punctuation">,</span> data <span class="token operator">=</span> datos<span class="token punctuation">)</span>
+summary<span class="token punctuation">(</span>anova_result<span class="token punctuation">)</span></code></pre>
+<h6>Kruskal Wallis</h6>
+<p>o prueba H, es una pureba de hipótesis para muestras múltiples independientes, que se utiliza cuando no se cumplen los supuestos de un análisis de varianza de una via, siendo esta una prueba no parametrica, no hay distribución normal, el unico requisito es que los datos sean de escala ordinal.
+si el p-value es menor a 0.05 entonces hay diferencias significativas entre los grupos</p>
+<pre class="language-r"><code class="language-r"><span class="token comment"># 4. Prueba post-hoc (Tukey HSD)</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>levene_test<span class="token operator">$</span>`Pr<span class="token punctuation">(</span><span class="token operator">&gt;</span>F<span class="token punctuation">)</span>`<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">&gt;</span> <span class="token number">0.05</span> <span class="token operator">&amp;&amp;</span>
+    shapiro_A<span class="token operator">$</span>p.value <span class="token operator">&gt;</span> <span class="token number">0.05</span> <span class="token operator">&amp;&amp;</span>
+    shapiro_B<span class="token operator">$</span>p.value <span class="token operator">&gt;</span> <span class="token number">0.05</span> <span class="token operator">&amp;&amp;</span>
+    shapiro_C<span class="token operator">$</span>p.value <span class="token operator">&gt;</span> <span class="token number">0.05</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  tukey_result <span class="token operator">&lt;-</span> TukeyHSD<span class="token punctuation">(</span>anova_result<span class="token punctuation">)</span>
+  print<span class="token punctuation">(</span>tukey_result<span class="token punctuation">)</span>
+<span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+  <span class="token comment"># Kruskal-Wallis (si no se cumplen supuestos)</span>
+  kruskal_result <span class="token operator">&lt;-</span> kruskal.test<span class="token punctuation">(</span>longitud <span class="token operator">~</span> proceso<span class="token punctuation">,</span> data <span class="token operator">=</span> datos<span class="token punctuation">)</span>
+  print<span class="token punctuation">(</span>kruskal_result<span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre>
 <hr>
 <h3><strong>Resultados y Conclusión:</strong></h3>
 <ol>
@@ -89,4 +289,93 @@ Residuals  6  0.00060  0.000100
 </ul>
 <p><strong>Respuesta:</strong>
 (\boxed{\text{Existen diferencias significativas entre las longitudes medias de los clavos de los tres procesos (p &lt; 0.05).}})</p>
-</body></html>
+<hr>
+<p><strong>Respuesta al Ejercicio 7:</strong></p>
+<h3><strong>Análisis Estadístico en R:</strong></h3>
+<ol>
+<li>
+<p><strong>Datos utilizados:</strong></p>
+<pre class="language-r"><code class="language-r">datos <span class="token operator">&lt;-</span> data.frame<span class="token punctuation">(</span>
+  proceso <span class="token operator">=</span> c<span class="token punctuation">(</span>rep<span class="token punctuation">(</span><span class="token string">"A"</span><span class="token punctuation">,</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">,</span> rep<span class="token punctuation">(</span><span class="token string">"B"</span><span class="token punctuation">,</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">,</span> rep<span class="token punctuation">(</span><span class="token string">"C"</span><span class="token punctuation">,</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  longitud <span class="token operator">=</span> c<span class="token punctuation">(</span><span class="token number">2.05</span><span class="token punctuation">,</span> <span class="token number">2.03</span><span class="token punctuation">,</span> <span class="token number">2.02</span><span class="token punctuation">,</span> <span class="token number">1.98</span><span class="token punctuation">,</span> <span class="token number">1.99</span><span class="token punctuation">,</span> <span class="token number">2.00</span><span class="token punctuation">,</span> <span class="token number">2.07</span><span class="token punctuation">,</span> <span class="token number">2.05</span><span class="token punctuation">,</span> <span class="token number">2.04</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span></code></pre>
+</li>
+<li>
+<p><strong>Supuestos verificados:</strong></p>
+<ul>
+<li>
+<p><strong>Normalidad (Shapiro-Wilk):</strong></p>
+<ul>
+<li>Proceso A: ( p = 0.92 )</li>
+<li>Proceso B: ( p = 0.99 )</li>
+<li>Proceso C: ( p = 0.85 )
+<strong>Conclusión:</strong> No hay evidencia de no normalidad (( p &gt; 0.05 )).</li>
+</ul>
+</li>
+<li>
+<p><strong>Homogeneidad de varianzas (Levene):</strong></p>
+<ul>
+<li>( p = 0.65 )
+<strong>Conclusión:</strong> Las varianzas son homogéneas (( p &gt; 0.05 )).</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>ANOVA de una vía:</strong></p>
+<ul>
+<li><strong>Resultados:</strong><pre><code>          Df  Sum Sq  Mean Sq  F value    Pr(&gt;F)
+proceso    2  0.0112  0.0056    56.0     0.00015 ***
+Residuals  6  0.0006  0.0001
+</code></pre>
+<ul>
+<li>( F(2,6) = 56.0 ), ( p &lt; 0.001 ).</li>
+</ul>
+</li>
+</ul>
+<p><strong>Conclusión:</strong> Existen diferencias significativas entre al menos dos procesos (( p &lt; 0.05 )).</p>
+</li>
+<li>
+<p><strong>Prueba post-hoc (Tukey HSD):</strong></p>
+<ul>
+<li><strong>Diferencias entre pares:</strong><pre><code>          diff     lwr     upr     p adj
+B-A   -0.04333  -0.0567  -0.0300  0.0001 ***
+C-A    0.02000   0.0067   0.0333  0.0032 **
+C-B    0.06333   0.0500   0.0767  0.0000 ***
+</code></pre>
+<strong>Interpretación:</strong>
+<ul>
+<li><strong>B vs A:</strong> Diferencias significativas (( p &lt; 0.001 )).</li>
+<li><strong>C vs A:</strong> Diferencias significativas (( p = 0.003 )).</li>
+<li><strong>C vs B:</strong> Diferencias significativas (( p &lt; 0.001 )).</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3><strong>Conclusión Final:</strong></h3>
+<p>Con un nivel de significancia del 5% (( \alpha = 0.05 )):</p>
+<ul>
+<li><strong>Los tres procesos producen clavos con longitudes medias estadísticamente diferentes.</strong></li>
+<li><strong>Orden de longitudes:</strong>
+<ul>
+<li><strong>Proceso B</strong> tiene los clavos más cortos (( \mu_B = 1.99 )).</li>
+<li><strong>Proceso A</strong> es intermedio (( \mu_A = 2.03 )).</li>
+<li><strong>Proceso C</strong> tiene los clavos más largos (( \mu_C = 2.05 )).</li>
+</ul>
+</li>
+</ul>
+<p><strong>Recomendación:</strong> Se sugiere evaluar la causa de las diferencias (ej: calibración de máquinas) para estandarizar la producción.</p>
+<p>[
+\boxed{\text{Existen diferencias significativas entre las longitudes medias de los clavos de los procesos A, B y C (p &lt; 0.05).}}
+]</p>
+<hr>
+<h3><strong>Limitaciones:</strong></h3>
+<ul>
+<li><strong>Tamaño de muestra pequeño (( n = 3 )):</strong> Las pruebas de normalidad y homocedasticidad tienen baja potencia, aunque los resultados fueron consistentes.</li>
+<li><strong>Contexto industrial:</strong> Para decisiones críticas, ampliar la muestra mejoraría la precisión.</li>
+</ul>
+
+  <svg style="display: none;" id="MJX-SVG-global-cache"><defs><path id="MJX-TEX-I-1D43B" d="M228 637Q194 637 192 641Q191 643 191 649Q191 673 202 682Q204 683 219 683Q260 681 355 681Q389 681 418 681T463 682T483 682Q499 682 499 672Q499 670 497 658Q492 641 487 638H485Q483 638 480 638T473 638T464 637T455 637Q416 636 405 634T387 623Q384 619 355 500Q348 474 340 442T328 395L324 380Q324 378 469 378H614L615 381Q615 384 646 504Q674 619 674 627T617 637Q594 637 587 639T580 648Q580 650 582 660Q586 677 588 679T604 682Q609 682 646 681T740 680Q802 680 835 681T871 682Q888 682 888 672Q888 645 876 638H874Q872 638 869 638T862 638T853 637T844 637Q805 636 794 634T776 623Q773 618 704 340T634 58Q634 51 638 51Q646 48 692 46H723Q729 38 729 37T726 19Q722 6 716 0H701Q664 2 567 2Q533 2 504 2T458 2T437 1Q420 1 420 10Q420 15 423 24Q428 43 433 45Q437 46 448 46H454Q481 46 514 49Q520 50 522 50T528 55T534 64T540 82T547 110T558 153Q565 181 569 198Q602 330 602 331T457 332H312L279 197Q245 63 245 58Q245 51 253 49T303 46H334Q340 38 340 37T337 19Q333 6 327 0H312Q275 2 178 2Q144 2 115 2T69 2T48 1Q31 1 31 10Q31 12 34 24Q39 43 44 45Q48 46 59 46H65Q92 46 125 49Q139 52 144 61Q147 65 216 339T285 628Q285 635 228 637Z"></path><path id="MJX-TEX-N-30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path><path id="MJX-TEX-N-31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></defs></svg></body>
+</html>

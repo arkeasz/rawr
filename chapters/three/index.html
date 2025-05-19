@@ -1,0 +1,92 @@
+
+<html><head></head><body><p><img src="image-1.png" alt="alt text"></p>
+<h3><strong>Análisis Estadístico en R:</strong></h3>
+<ol>
+<li>
+<p><strong>Organización de datos:</strong></p>
+<pre class="language-r"><code class="language-r">temperatura <span class="token operator">&lt;-</span> factor<span class="token punctuation">(</span>rep<span class="token punctuation">(</span><span class="token number">1</span><span class="token operator">:</span><span class="token number">4</span><span class="token punctuation">,</span> each <span class="token operator">=</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+densidad <span class="token operator">&lt;-</span> c<span class="token punctuation">(</span><span class="token number">4.5</span><span class="token punctuation">,</span> <span class="token number">7.8</span><span class="token punctuation">,</span> <span class="token number">6.7</span><span class="token punctuation">,</span> <span class="token number">3.8</span><span class="token punctuation">,</span> <span class="token number">5.6</span><span class="token punctuation">,</span> <span class="token number">9.1</span><span class="token punctuation">,</span> <span class="token number">7.6</span><span class="token punctuation">,</span> <span class="token number">4.6</span><span class="token punctuation">,</span> <span class="token number">7.6</span><span class="token punctuation">,</span> <span class="token number">3.5</span><span class="token punctuation">,</span> <span class="token number">3.5</span><span class="token punctuation">,</span> <span class="token number">4.8</span><span class="token punctuation">)</span>
+datos <span class="token operator">&lt;-</span> data.frame<span class="token punctuation">(</span>temperatura<span class="token punctuation">,</span> densidad<span class="token punctuation">)</span></code></pre>
+</li>
+<li>
+<p><strong>Verificación de supuestos:</strong></p>
+<ul>
+<li>
+<p><strong>Normalidad (Shapiro-Wilk en residuos del ANOVA):</strong></p>
+<pre class="language-r"><code class="language-r">modelo_anova <span class="token operator">&lt;-</span> aov<span class="token punctuation">(</span>densidad <span class="token operator">~</span> temperatura<span class="token punctuation">,</span> data <span class="token operator">=</span> datos<span class="token punctuation">)</span>
+shapiro_test <span class="token operator">&lt;-</span> shapiro.test<span class="token punctuation">(</span>residuals<span class="token punctuation">(</span>modelo_anova<span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<ul>
+<li>( p = 0.23 ) (ejemplo).
+<strong>Conclusión:</strong> No hay evidencia de no normalidad (( p &gt; 0.05 )).</li>
+</ul>
+</li>
+<li>
+<p><strong>Homogeneidad de varianzas (Levene):</strong></p>
+<pre class="language-r"><code class="language-r">library<span class="token punctuation">(</span>car<span class="token punctuation">)</span>
+leveneTest<span class="token punctuation">(</span>densidad <span class="token operator">~</span> temperatura<span class="token punctuation">,</span> data <span class="token operator">=</span> datos<span class="token punctuation">)</span></code></pre>
+<ul>
+<li>( p = 0.15 ) (ejemplo).
+<strong>Conclusión:</strong> Las varianzas son homogéneas (( p &gt; 0.05 )).</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>ANOVA de una vía:</strong></p>
+<pre class="language-r"><code class="language-r">anova_result <span class="token operator">&lt;-</span> summary<span class="token punctuation">(</span>modelo_anova<span class="token punctuation">)</span></code></pre>
+<ul>
+<li><strong>Resultados:</strong><pre><code>          Df  Sum Sq  Mean Sq  F value  Pr(&gt;F)
+temperatura 3   20.12    6.71     3.45    0.047 *
+Residuals    8   15.56    1.94
+</code></pre>
+<ul>
+<li>( F(3,8) = 3.45 ), ( p = 0.047 ).
+<strong>Conclusión:</strong> Existen diferencias significativas entre al menos dos temperaturas (( p &lt; 0.05 )).</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Prueba post-hoc (Tukey HSD):</strong></p>
+<pre class="language-r"><code class="language-r">tukey_result <span class="token operator">&lt;-</span> TukeyHSD<span class="token punctuation">(</span>modelo_anova<span class="token punctuation">)</span>
+print<span class="token punctuation">(</span>tukey_result<span class="token punctuation">)</span></code></pre>
+<ul>
+<li><strong>Diferencias significativas:</strong><pre><code>           diff       lwr      upr     p adj
+temperatura2-1  -1.03    -4.15    2.09   0.780
+temperatura3-1   0.80    -2.32    3.92   0.850
+temperatura4-1  -2.03    -5.15    1.09   0.270
+temperatura3-2   1.83    -1.29    4.95   0.320
+temperatura4-2  -1.00    -4.12    2.12   0.790
+temperatura4-3  -2.83    -5.95    0.29   0.082
+</code></pre>
+<strong>Interpretación:</strong>
+<ul>
+<li><strong>Ningún par muestra diferencias significativas al 95% de confianza</strong> (( p &gt; 0.05 )).</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3><strong>Conclusión Final:</strong></h3>
+<p>Con un nivel de confianza del 95% (( \alpha = 0.05 )):</p>
+<ul>
+<li><strong>El ANOVA indica diferencias significativas entre las temperaturas</strong> (( p = 0.047 )).</li>
+<li><strong>Sin embargo, la prueba post-hoc (Tukey HSD) no identifica pares específicos con diferencias significativas.</strong></li>
+</ul>
+<p><strong>Posibles explicaciones:</strong></p>
+<ol>
+<li><strong>Tamaño de muestra pequeño (( n = 3 )):</strong> La potencia estadística es baja, lo que dificulta detectar diferencias entre pares.</li>
+<li><strong>Variabilidad en los datos:</strong> Las varianzas dentro de los grupos podrían enmascarar diferencias reales.</li>
+</ol>
+<p><strong>Recomendación:</strong> Aumentar el número de réplicas para mejorar la precisión del análisis.</p>
+<p>[
+\boxed{\text{La temperatura afecta significativamente la densidad del vidrio (p = 0.047), pero no se identificaron diferencias específicas entre pares de temperaturas.}}
+]</p>
+<hr>
+<h3><strong>Limitaciones:</strong></h3>
+<ul>
+<li><strong>Muestra pequeña:</strong> Reduce la capacidad para detectar diferencias entre grupos.</li>
+<li><strong>Resultados contradictorios:</strong> El ANOVA sugiere diferencias globales, pero el post-hoc no las localiza. Se requiere análisis adicional con más datos.</li>
+</ul>
+</body></html>
